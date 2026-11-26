@@ -1,117 +1,141 @@
-# Minimalist Reading Overlay (AutoHotkey v2)
+# Reading Focus Overlay
 
-This tool helps you focus while reading or coding by adding:
-- A pencil-style overlay cursor
-- A click blocker to prevent distractions
-- A blur overlay for the taskbar or screen
-- A focus frame that dims everything except selected areas
-- An alt tab blocker to prevent switching programs
-  
-## Recommended Workflow
-Recommended tools for reading with:
-- [ppInk](https://github.com/pubpub-zz/ppInk) - Screenshot annotation for capturing insights for a quick second to understand stuff
-- [ShareX](https://getsharex.com/) - for the same reason as above great tool in general as well,ur choice. use both i would say
-- Any pomodoro timer - Session management and focus structuring
-- will recommend taking notes by hands i.e. paper or ipad than typing for learning but this is just my opinion,take it with a grain of salt
+Dim everything except the text you are reading. A small Windows tool written in
+[V](https://vlang.io): a focus frame you draw around the passage that matters,
+plus a pencil cursor, a click blocker, an Alt+Tab blocker and a blurred taskbar.
+Everything is controlled from the keyboard or from one tray panel.
 
-**Typical session:** Start timer → Enable focus frame → Read without distractions → Capture key insights with ppInk/sharex → Repeat
+![Selecting an area](docs/screens/ui_rect.png)
 
-## How to Use
+## Run
 
-### Quick Start
-Just run the .exe from release
+Download or build `reading_focus_overlay.exe` and start it. It lives in the
+system tray (the violet icon); click it for the control panel.
 
-### Manual Setup
-1. Requires AutoHotkey v2.0+
-2. Run `reading_focus_overlay.ahk` (or compile it into an .exe using Ahk2Exe)
-3. Use the default hotkeys:
-   - `Ctrl + Shift + R` = Toggle pencil overlay
-   - `Ctrl + Shift + B` = Toggle click block
-   - `Ctrl + Shift + D` = Toggle taskbar dimming
-   - `Ctrl + Shift + F` = Toggle focus frame
-   - `Ctrl + Shift + '` = Toggle alt tab block
-   - `Shift + Esc` = Re-select focus area
-   - `Esc` = Leave selection mode of focus area
+```powershell
+.\reading_focus_overlay.exe
+```
 
-## Focus Frame Features
+`reading_focus_overlay.exe` is the release build included in this repository.
+To rebuild it you need the V toolchain in `C:\git\v` and the shared libraries in
+`C:\git\v_projects\lib` (`vraster`, `vfonts`, `vfa_icons`):
 
-### Rectangle Mode
-- Quick selection of rectangular areas to focus on
-- Simply click and drag to create a rectangular focus area
-- Best for standard document layouts
+```powershell
+.\build.ps1            # release build -> reading_focus_overlay.exe
+.\build.ps1 -Test      # unit tests
+```
 
-### Polygon Mode
-- Create custom-shaped focus areas with multiple points
-- Perfect for irregular content layouts, multiple areas of interest, or complex UI elements
-- **Multi-Polygon Workflow:**
-  1. Click points to create the first polygon (at least 3 points)
-  2. Press `Enter` to complete the current polygon
-  3. Start clicking to create additional polygons as needed
-  4. Press `Enter` after each polygon to add it to your selection
-  5. Press `Space` when finished to finalize all polygons and exit selection mode
-  6. Press `Backspace` to remove the last added polygon if needed
+Starting a second copy replaces the running one.
 
-### Multi-Rectangle Mode
-- Create multiple rectangular selections in a single session
-- Perfect for selecting several separate text blocks, code sections, or interface elements
-- **Multi-Rectangle Workflow:**
-  1. Click and drag to create the first rectangle
-  2. Click and drag to create additional rectangles as needed
-  3. Press `Enter` when finished to finalize all rectangles and exit selection mode
-  4. Press `Backspace` to remove the last added rectangle if needed
-- Uses the same plus cursor as polygon mode for consistency
+## Hotkeys
 
-### Mode Selection
-- Switch between modes using the toolbar or number keys
-- Visual toolbar appears during selection with helpful buttons:
-  - Rectangle mode (□): Select rectangular areas
-  - Multi-Rectangle mode (⌐): Select multiple rectangular areas
-  - Polygon mode (⬡): Select custom-shaped areas
-  - Cancel (✕): Exit selection mode
-- Active mode is highlighted in green
+| Keys | Action |
+| --- | --- |
+| `Ctrl+Shift+F` | Focus frame: start selecting, then show/hide the dimmer |
+| `Shift+Esc` | Re-select the focus area |
+| `Ctrl+Shift+R` | Pencil cursor |
+| `Ctrl+Shift+B` | Block clicks |
+| `Ctrl+Shift+D` | Blur the taskbar |
+| `Ctrl+Shift+'` | Block Alt+Tab, Win+Tab, Ctrl+Alt+Tab |
+| `Ctrl+Shift+P` | Control panel |
+| `Ctrl+Shift+Q` | Quit |
 
-### Keyboard Shortcuts During Selection
-- `1` = Switch to Rectangle mode
-- `2` = Switch to Multi-Rectangle mode
-- `3` = Switch to Polygon mode
-- `4` = Cancel selection
-- `Enter` = Complete current polygon (in Polygon mode) or finish all rectangles (in Multi-Rectangle mode)
-- `Space` = Finalize all polygons and exit selection (in Polygon mode only)
-- `Backspace` = Remove last added point/polygon (in Polygon mode) or remove last rectangle (in Multi-Rectangle mode)
-- `Shift + Backspace` = Remove last added polygon (in Polygon mode only)
-- `Esc` = Cancel selection and exit
+### Typical session
 
-## How to Customize Shortcuts
+Start a timer, enable the focus frame, read without distractions, capture the
+key insights, repeat.
 
-Open `config.ahk` and change the hotkey values at the top.
-There is no UI — just edit the file and restart the script.
+## Focus frame
 
-## Files
+Press `Ctrl+Shift+F`. The screen dims softly and a dock appears at the top
+(drag its grip to move it). The dock shows the current mode, the keys that work
+in it, and Undo / Apply / Close buttons. A crosshair and a coordinate badge
+follow the cursor.
 
-- main.ahk
-- config.ahk
-- pencil_overlay.ahk
-- distraction.ahk
-- focus_frame.ahk
-- Gdip_All.ahk
-- pencil.png
-- invisible-cursor.cur
-- plus_cursor.cur
-- alttab_blocker.ahk
+| Mode | Key | How it works |
+| --- | --- | --- |
+| Rectangle | `1` | Drag once; the selection is final on release. A badge shows its size |
+| Multi-area | `2` | Drag several areas; `Enter` or **Apply** finishes, `Backspace` removes the last |
+| Polygon | `3` | Click points; `Enter` or clicking the first point closes a shape, `Space` or **Apply** finishes, `Backspace` removes a point, `Shift+Backspace` a whole shape |
 
-> Note on Antivirus Flags
+`4` or `Esc` cancels. You see each hole live while you draw it. When the frame
+is final, the dim deepens, a ring pulses out from the new area, and the holes are
+click-through, so you can still scroll and click inside them.
 
-Some antivirus engines may flag the compiled .exe due to use of AutoHotkey, Windows API calls (like SetSystemCursor), or file embedding (FileInstall).
-This is a known false positive with AHK scripts.
+![Polygon mode](docs/screens/ui_polygon.png)
 
-To be 100% sure, you're welcome to inspect or run the script directly, or compile it yourself using Ahk2Exe. That's the whole reason I made it open source.
+## Control panel
 
-## Demonstrations
+Click the tray icon (or press `Ctrl+Shift+P`) to switch every feature on or off
+and see its shortcut. **Edit config** opens `config.ini`; **Quit** exits.
 
-### Standard Focus Frame
-![Focus Frame Demo](https://github.com/oxzoid/reading-focus-overlay/blob/ccb5584d5956c22cc779049e43a8d4b9c8c40223/6qTwpI3Q1Y.gif)
+![Control panel](docs/screens/ui_panel.png)
 
-### Polygon Selection Mode
-![Polygon Selection Demo](https://github.com/oxzoid/reading-focus-overlay/blob/ca896257ffe135c673048562e4a11c39264b3c9c/reading_focus_overlay_zY21JMZIbu.gif)
+## Configuration
 
-UPDATE:no new releases after this,this will be ported to cpp for better performance and control this project is whole in itseld with ahk with only few minor things left which cannot be done easily in autohotkey and fulfils my need,see u in the new port whenever i start on it. can fix some stuff here and there if theres something majorly wrong.
+Hotkeys and a few looks live in `config.ini` next to the executable (or pass
+`--config <file>`). Edit it and restart.
+
+```powershell
+.\reading_focus_overlay.exe --write-config   # write config.ini with the defaults
+.\reading_focus_overlay.exe --print-config   # show the effective configuration
+```
+
+```ini
+[Shortcuts]
+HOTKEY_TOGGLE_FOCUS=^+F      ; ^ Ctrl, + Shift, ! Alt, # Win
+HOTKEY_PANEL=^+P
+[Appearance]
+ACCENT=#7C6CFF               ; highlight colour
+DIM_DRAG=120                 ; dim alpha while selecting (0-255)
+DIM_FINAL=225                ; dim alpha once the frame is set (0-255)
+PENCIL_MAX_EDGE=300
+```
+
+Mistakes in the file (unknown keys, bad numbers, bad colours, hotkeys another
+program already owns) are shown in a toast instead of being ignored. The `'`
+key follows your keyboard layout, so on some layouts it is awkward; bind another
+key if so.
+
+## How it is built
+
+The rules and the pixels are separate from Windows:
+
+| File | Role |
+| --- | --- |
+| `selection.v` | State machine: what clicks, keys and toggles do |
+| `scene.v` | Turns the state into the full-screen overlay (dim, holes, guides, pulse) |
+| `ui.v`, `kit.v` | Dock, control panel, toast, theme, icons and text |
+| `anim.v` | Tweens that drive every animation |
+| `config.v`, `geometry.v`, `imgutil.v` | Config/hotkey parsing, geometry, image helpers |
+| `winlayer.c.v`, `app_win32.c.v`, `win32.c.v` | Windows: per-pixel layered windows, hooks, tray, hotkeys |
+| `main.v` | Command line |
+
+Drawing uses the shared `vraster` library (anti-aliased shapes, shadows,
+gradients, polygons), `vfonts` (TrueType text; Segoe UI when installed) and
+`vfa_icons` (Font Awesome icons). Each window is a per-pixel-alpha layer, so
+shadows and the glass look are real transparency.
+
+`reading_focus_overlay.exe --demo docs/screens/ui` renders the screenshots above
+without a desktop.
+
+## Tests
+
+```powershell
+.\build.ps1 -Test                                                   # unit tests
+.\scripts\e2e_smoke.ps1 -Exe .\reading_focus_overlay.exe            # drives the real desktop
+.\scripts\e2e_hooks.ps1 -Exe .\reading_focus_overlay.exe            # click/Alt+Tab block, blur
+```
+
+The end-to-end scripts briefly dim the screen and move the cursor. They remap
+the few hotkeys other programs commonly own, and only send mouse input after the
+first hotkey has been seen to work.
+
+## History
+
+This is a port of the AutoHotkey v2 tool by oxzoid, redesigned from scratch. The
+AutoHotkey sources were removed; they remain in the git history.
+
+## License
+
+GPL-3.0, see [LICENSE](LICENSE).

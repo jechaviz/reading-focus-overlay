@@ -1,0 +1,5 @@
+*.exe
+!reading_focus_overlay.exe
+*.manifest
+out/
+config.ini
